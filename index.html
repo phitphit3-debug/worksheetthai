@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>สื่อฝึกอ่านแจกลูกสะกดคำ ป.1 (เมนูเดิม-เพิ่มเนื้อหา)</title>
+          <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Mali:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --consonant-color: #0056b3; 
+            --vowel-color: #d63031; 
+            --final-color: #27ae60;
+            --bg-page: #fff9e6; 
+        }
+        body { font-family: 'Sarabun', sans-serif; background: #f0f2f5; margin: 0; }
+        
+        /* Sidebar แบบเดิมที่คุณครูชอบ */
+        .no-print { background: #2c3e50; color: white; padding: 20px; position: fixed; width: 280px; height: 100vh; box-sizing: border-box; z-index: 100; overflow-y: auto; }
+        .main-content { margin-left: 300px; padding: 10px; display: flex; justify-content: center; }
+        
+        .sheet { width: 210mm; min-height: 297mm; padding: 10mm 15mm; background: var(--bg-page); border: 10px solid #ffcc00; box-sizing: border-box; border-radius: 20px; }
+        
+        .ws-title { text-align: center; font-family: 'Mali'; font-size: 34px; color: #d35400; text-shadow: 2px 2px #fff; margin-top: 10px; }
+        .student-info { text-align: center; font-size: 16px; margin-bottom: 20px; background: #fff; padding: 10px; border-radius: 50px; border: 2px dashed #ff9f43; }
+        
+        .box-info { background: #ffffff; border-radius: 15px; padding: 15px; margin-bottom: 20px; border: 3px solid #ff9f43; font-size: 15px; line-height: 1.6; }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; margin-top: 10px; }
+        th { background: #ff9f43; color: white; padding: 12px; font-size: 18px; font-family: 'Mali'; border-radius: 10px; }
+        td { background: white; padding: 10px; border: 2px solid #ffecb3; text-align: center; border-radius: 10px; }
+
+        .word-cell { font-family: 'Mali'; font-size: 38px; color: #2d3436; font-weight: bold; }
+        .char-cell { font-family: 'Mali'; font-size: 32px; color: var(--consonant-color); font-weight: bold; }
+        .spell-text { font-size: 20px; color: #333; text-align: left; padding-left: 20px; line-height: 1.5; }
+        
+        .highlight-c { color: var(--consonant-color); font-weight: bold; }
+        .highlight-v { color: var(--vowel-color); font-weight: bold; }
+        .highlight-f { color: var(--final-color); font-weight: bold; }
+
+        select, button { width: 100%; padding: 14px; margin: 8px 0; border-radius: 12px; border: none; font-size: 16px; font-family: 'Sarabun'; font-weight: bold; cursor: pointer; }
+        .btn-print { background: #27ae60; color: white; box-shadow: 0 4px #1e8449; }
+        .btn-gen { background: #3498db; color: white; box-shadow: 0 4px #2471a3; }
+
+        @media print {
+            .no-print { display: none !important; }
+            .main-content { margin-left: 0; padding: 0; }
+            .sheet { width: 100%; border: none; background: white !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <h2 style="font-family:'Mali'; text-align:center;">🌈 เมนูฝึกอ่าน ป.1</h2>
+    <label>เลือกบทเรียน:</label>
+    <select id="vowelSelect" onchange="generate()">
+        <optgroup label="สระเดี่ยว (ไม่มีตัวสะกด)">
+            <option value="-ะ">สระ อะ</option>
+            <option value="-า">สระ อา</option>
+            <option value="-ิ">สระ อิ</option>
+            <option value="-ี">สระ อี</option>
+            <option value="-ุ">สระ อุ</option>
+            <option value="-ู">สระ อู</option>
+        </optgroup>
+        <optgroup label="คำที่มีตัวสะกด (ตรงมาตรา)">
+            <option value="-ะ+น">สระ อะ + แม่ กน (เปลี่ยนรูป)</option>
+            <option value="-า+ง">สระ อา + แม่ กง</option>
+            <option value="-า+น">สระ อา + แม่ กน</option>
+            <option value="-า+ม">สระ อา + แม่ กม</option>
+            <option value="-ิ+ง">สระ อิ + แม่ กง</option>
+            <option value="-ุ+ง">สระ อุ + แม่ กง</option>
+        </optgroup>
+        <optgroup label="สระลดรูป / ควบกล้ำ">
+            <option value="โ-ะ+ก">สระ โอะ ลดรูป (แม่ กก)</option>
+            <option value="โ-ะ+น">สระ โอะ ลดรูป (แม่ กน)</option>
+            <option value="ห+">อักษรนำ (ห นำ)</option>
+            <option value="ควบ+ร">คำควบกล้ำ (ร)</option>
+        </optgroup>
+    </select>
+    
+    <button class="btn-gen" onclick="generate()">🎲 สุ่มคำศัพท์ใหม่</button>
+    <button class="btn-print" onclick="window.print()">🖨️ พิมพ์ใบงานสี</button>
+    
+    <div style="margin-top:20px; font-size:13px; color:#bdc3c7;">
+        <b>คำแนะนำ:</b><br>
+        ใบงานจะปรับรูปแบบการสะกดให้อัตโนมัติตามหัวข้อที่ครูเลือก
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="sheet">
+        <h1 class="ws-title" id="titleDisplay">🌈 แบบฝึกอ่านสะกดคำ</h1>
+        <div class="student-info">ชื่อ................................................................................ ชั้น ป.1/.......... เลขที่..........</div>
+        
+        <div class="box-info" id="infoBox">
+            <b>📢 วิธีฝึกอ่าน:</b> เปล่งเสียงพยัญชนะต้น แล้วเปล่งเสียงสระ จากนั้นประสมเสียงเป็นคำ
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th width="20%">คำศัพท์</th>
+                    <th width="15%">ตัวต้น</th>
+                    <th width="50%">อ่านสะกดคำ (แจกลูก)</th>
+                    <th width="15%">ให้คะแนน</th>
+                </tr>
+            </thead>
+            <tbody id="exerciseTable"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const alphabet = ["ก","ข","ค","ง","จ","ฉ","ช","ซ","ด","ต","ถ","ท","น","บ","ป","ผ","ฝ","พ","ฟ","ม","ย","ร","ล","ว","ส","ป","อ"];
+    const phoneticMap = {"ก":"กอ","ข":"ขอ","ค":"คอ","ง":"งอ","จ":"จอ","ฉ":"ฉอ","ช":"ชอ","ซ":"ซอ","ด":"ดอ","ต":"ตอ","ถ":"ถอ","ท":"ทอ","น":"นอ","บ":"บอ","ป":"ปอ","ผ":"ผอ","ฝ":"ฝอ","พ":"พอ","ฟ":"ฟอ","ม":"มอ","ย":"ยอ","ร":"รอ","ล":"ลอ","ว":"วอ","ส":"สอ","ห":"หอ","อ":"ออ"};
+
+    function generate() {
+        const mode = document.getElementById('vowelSelect').value;
+        const table = document.getElementById('exerciseTable');
+        const title = document.getElementById('titleDisplay');
+        const info = document.getElementById('infoBox');
+        table.innerHTML = '';
+
+        let selectedChars = [...alphabet].sort(() => 0.5 - Math.random()).slice(0, 20);
+        
+        title.innerText = `🌈 แบบฝึกอ่าน: ${document.getElementById('vowelSelect').options[document.getElementById('vowelSelect').selectedIndex].text}`;
+
+        selectedChars.forEach(char => {
+            let word = "";
+            let spell = "";
+            let p = phoneticMap[char];
+
+            if (mode === "-ะ+น") {
+                word = char + "ัน";
+                spell = `<b>${word}</b> อ่านว่า <span class="highlight-c">${p}</span> - <span class="highlight-v">อะ</span> - <span class="highlight-f">นอ</span> - <b>${word}</b>`;
+            } else if (mode.includes("+") && mode.startsWith("-า")) {
+                let f = mode.split("+")[1];
+                word = char + "า" + f;
+                spell = `<b>${word}</b> อ่านว่า <span class="highlight-c">${p}</span> - <span class="highlight-v">อา</span> - <span class="highlight-f">${phoneticMap[f]}</span> - <b>${word}</b>`;
+            } else if (mode.startsWith("โ-ะ")) {
+                let f = mode.split("+")[1];
+                word = char + f;
+                spell = `<b>${word}</b> อ่านว่า <span class="highlight-c">${p}</span> - <span class="highlight-v">โอะ</span> - <span class="highlight-f">${phoneticMap[f]}</span> - <b>${word}</b>`;
+            } else if (mode === "ห+") {
+                let n = ["น","ม","ย","ล","ว"][Math.floor(Math.random()*5)];
+                word = "ห" + n + "า";
+                spell = `<b>${word}</b> อ่านว่า <span class="highlight-c">หอ</span> - <span class="highlight-c">${phoneticMap[n]}</span> - <span class="highlight-v">อา</span> - <b>${word}</b>`;
+            } else if (mode === "ควบ+ร") {
+                let c = ["ก","ข","ค","ป","พ"][Math.floor(Math.random()*5)];
+                word = c + "ร" + "า";
+                spell = `<b>${word}</b> อ่านว่า <span class="highlight-c">${phoneticMap[c]}</span> - <span class="highlight-c">รอ</span> - <span class="highlight-v">อา</span> - <b>${word}</b>`;
+            } else {
+                // สระเดี่ยวปกติ
+                word = mode.replace('-', char);
+                let vName = mode.replace('-','');
+                spell = `<b>${word}</b> อ่านว่า <span class="highlight-c">${p}</span> - <span class="highlight-v">${vName}</span> - <b>${word}</b>`;
+            }
+
+            table.innerHTML += `
+                <tr>
+                    <td class="word-cell">${word}</td>
+                    <td class="char-cell">${word[0]}</td>
+                    <td class="spell-text">${spell}</td>
+                    <td style="color:#dfe6e9">⭐⭐⭐</td>
+                </tr>
+            `;
+        });
+    }
+
+    window.onload = generate;
+</script>
+</body>
+</html>
